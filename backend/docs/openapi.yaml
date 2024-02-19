@@ -1,0 +1,323 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: 'Checkbox System Swagger Docs'
+  description: 'Checkbox System Swagger Docs for Jitera'
+servers:
+  # - description: Live API
+  #   url: 'https://backend.hendryzheng.com/'
+  - description: Local development
+    url: 'http://localhost:3000'
+paths:
+  /healthcheck/readiness:
+    get:
+      tags:
+        - healthcheck
+      operationId: getReadiness
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Healthcheck'
+  /auth/login:
+    post:
+      tags:
+        - Login
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        404:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+        401:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401Response'
+        500:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500Response'
+  /auth/register:
+    post:
+      tags:
+        - Register
+      operationId: authRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        400:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+  /auth/profile:
+    get:
+      tags:
+        - Profile
+      operationId: getAuthProfile
+      parameters:
+        - $ref: '#/components/parameters/authorization'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+  /auth/logout:
+    post:
+      tags:
+        - Logout
+      operationId: authLogout
+      parameters:
+        - $ref: '#/components/parameters/authorization'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  
+
+  /errors/{error_code}:
+    get:
+      tags:
+        - error
+        - example
+      operationId: getErrorExample
+      parameters:
+        - name: error_code
+          in: path
+          description: Error HTTP code
+          required: true
+          schema:
+            type: string
+            enum: ['200', '400', '403', '422', '500']
+      responses:
+        200:
+          description: default response, instruction to use this endpoint
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        400:
+          description: example error 400 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400Response'
+        403:
+          description: example error 403 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403Response'
+        404:
+          description: example error 404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
+        500:
+          description: example error 500 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500Response'
+
+components:
+  parameters:
+    authorization:
+      name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+    sort_by:
+      name: sort_by
+      in: query
+      schema:
+        type: string
+    search_keyword:
+      name: search_keyword
+      in: query
+      schema:
+        type: string
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        task_name:
+          type: string
+        description:
+          type: string
+        due_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [not_urgent, due_soon, overdue]
+    TaskInput:
+      type: object
+      properties:
+        task_name:
+          type: string
+        description:
+          type: string
+        due_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [pending, in_progress, completed]
+    TaskPatch:
+      type: object
+      properties:
+        item_id:
+          type: number
+    Auth:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Healthcheck:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: 'OK'
+    Error400Response:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          enum:
+            - API_VALIDATION_ERROR
+            - INVALID_JSON_FORMAT
+            - EMAIL_ALREADY_EXIST
+        message:
+          type: string
+        errors:
+          $ref: '#/components/schemas/ArrayOfErrors'
+    Error403Response:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          enum:
+            - REQUEST_FORBIDDEN_ERROR
+        message:
+          type: string
+        errors:
+          $ref: '#/components/schemas/ArrayOfErrors'
+    Error401Response:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+        errors:
+          $ref: '#/components/schemas/ArrayOfErrors'
+    Error404Response:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          enum:
+            - USER_NOT_FOUND
+            - TASK_NOT_FOUND
+        message:
+          type: string
+        errors:
+          $ref: '#/components/schemas/ArrayOfErrors'
+    Error500Response:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          enum:
+            - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+        errors:
+          $ref: '#/components/schemas/ArrayOfErrors'
+    ArrayOfErrors:
+      nullable: true
+      type: array
+      items:
+        oneOf:
+          - type: string
+          - type: object

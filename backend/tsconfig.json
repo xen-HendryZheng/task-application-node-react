@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "types": ["jest", "reflect-metadata", "node", "express"],
+    "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./build",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "lib": [
+      "es2021",
+      "es2017",
+      "es5",
+      "es6"
+   ],
+    "rootDir": "src",
+    "baseUrl": ".",
+    "strict": true,
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noImplicitThis": true,
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", ".vscode"],
+}

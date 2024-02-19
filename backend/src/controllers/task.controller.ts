@@ -1,0 +1,96 @@
+import { Request, Response, NextFunction, Router } from 'express';
+import { getUserSession } from '../libs/context-session';
+import { authenticateToken } from '../middlewares/auth.middleware';
+import moment from 'moment';
+import { TaskService } from 'src/services/task.service';
+
+export interface ITaskResponse {
+    task_id: number;
+    task_name: string;
+    task_description: string;
+    task_due_date: string;
+    task_status: string;
+}
+
+export class TaskController {
+    private readonly taskService: TaskService;
+    private router: Router;
+
+    constructor(taskService: TaskService) {
+        this.taskService = taskService;
+        this.router = Router();
+        this.router.post('/', authenticateToken, this.createTask.bind(this));
+        this.router.get('/', authenticateToken, this.getTasks.bind(this));
+        this.router.patch('/', authenticateToken, this.patchItems.bind(this));
+
+    }
+
+    getRouter(): Router {
+        return this.router;
+    }
+
+    public async createTask(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { task_name, task_description, task_due_date } = req.body;
+            const user = await getUserSession() as any;
+            const item = await this.taskService.addItem({
+                userId: user.user_id,
+                taskName: task_name,
+                taskDescription: task_description,
+                taskDueDate: task_due_date
+            });
+            const response: ITaskResponse = {
+                task_id: item.taskId,
+                task_name: item.taskName,
+                task_description: item.taskDescription,
+                task_due_date: moment(item.taskDueDate).format(),
+                task_status: item.taskStatus
+            }
+            return res.status(201).json(response);
+        } catch (err) {
+            return next(err);
+        }
+
+    }
+    public async getTasks(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = await getUserSession() as any;
+            const items = await this.taskService.getItems(user.user_id);
+            const response: ITaskResponse[] = items.map(item => {
+                return {
+                    task_id: item.taskId,
+                    task_name: item.taskName,
+                    task_description: item.taskDescription,
+                    task_due_date: moment(item.taskDueDate).format(),
+                    task_status: item.taskStatus
+                }
+            });
+            return res.status(200).json(response);
+        } catch (err) {
+            return next(err);
+        }
+    }
+
+    public async patchItems(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { task_id, task_name, task_description, task_due_date, task_status } = req.body;
+            const user = await getUserSession() as any;
+            const item = await this.taskService.patchItem(task_id, user.user_id, {
+                taskName: task_name,
+                taskDescription: task_description,
+                taskDueDate: task_due_date,
+                taskStatus: task_status
+            });
+            const response: ITaskResponse = {
+                task_id: item.taskId,
+                task_name: item.taskName,
+                task_description: item.taskDescription,
+                task_due_date: moment(item.taskDueDate).format(),
+                task_status: item.taskStatus
+            }
+            return res.status(200).json(response);
+        } catch (err) {
+            return next(err);
+        }
+    }
+}
