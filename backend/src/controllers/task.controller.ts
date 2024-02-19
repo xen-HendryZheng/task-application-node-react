@@ -31,13 +31,15 @@ export class TaskController {
 
     public async createTask(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { task_name, task_description, task_due_date } = req.body;
+            const { task_name, description, due_date, status } = req.body;
             const user = await getUserSession() as any;
             const item = await this.taskService.addItem({
                 userId: user.user_id,
                 taskName: task_name,
-                taskDescription: task_description,
-                taskDueDate: task_due_date
+                taskDescription: description,
+                taskDueDate: due_date,
+                taskStatus: status,
+                taskCreated: new Date()
             });
             const response: ITaskResponse = {
                 task_id: item.taskId,
