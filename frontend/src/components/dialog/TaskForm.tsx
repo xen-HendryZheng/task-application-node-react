@@ -6,7 +6,9 @@ import {
   DialogBody,
   DialogFooter,
   Typography, 
-  Input
+  Input,
+  Textarea,
+  Radio
 } from "@material-tailwind/react";
 
 interface TaskFormProps {
@@ -21,14 +23,15 @@ export function TaskFormDialog({openDialog, handler}: TaskFormProps ) {
       <Dialog placeholder={''} open={openDialog} handler={handler}>
         <DialogHeader placeholder={''}>Add New Task.</DialogHeader>
         <DialogBody placeholder={''}>
-            <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
+            <hr/>
+            <form className="mt-5 mb-2 w-80 max-w-screen-lg sm:w-96">
                 <div className="mb-1 flex flex-col gap-6">
                 <Typography placeholder={''} variant="h6" color="blue-gray" className="-mb-3">
-                    Your Name
+                    Task Name
                 </Typography>
                 <Input
                     size="lg"
-                    placeholder="name@mail.com"
+                    placeholder="Enter your task name"
                     className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                     labelProps={{
                     className: "before:content-none after:content-none",
@@ -36,24 +39,23 @@ export function TaskFormDialog({openDialog, handler}: TaskFormProps ) {
                     crossOrigin={''}
                 />
                 <Typography placeholder={''} variant="h6" color="blue-gray" className="-mb-3">
-                    Your Email
+                    Task Description
                 </Typography>
-                <Input
+                <Textarea
                     size="lg"
-                    placeholder="name@mail.com"
+                    placeholder="Enter your task description"
                     className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                     labelProps={{
                     className: "before:content-none after:content-none",
                     }}
-                    crossOrigin={''}
                 />
                 <Typography placeholder={''} variant="h6" color="blue-gray" className="-mb-3">
-                    Password
+                    Due Date
                 </Typography>
                 <Input
-                    type="password"
+                    type="datetime-local"
                     size="lg"
-                    placeholder="********"
+                    placeholder="Enter your task description"
                     className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                     labelProps={{
                     className: "before:content-none after:content-none",
@@ -61,6 +63,8 @@ export function TaskFormDialog({openDialog, handler}: TaskFormProps ) {
                     crossOrigin={''}
                 />
                 </div>
+                
+                
             </form>
         </DialogBody>
         <DialogFooter placeholder={''}>

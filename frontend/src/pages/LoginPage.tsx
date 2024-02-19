@@ -1,14 +1,52 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import {
-    Input,
-    Button,
-    Typography,
-  } from "@material-tailwind/react";
-  import { Link } from "react-router-dom";
-  
-  
-export function LoginPage () {
+  Input,
+  Button,
+  Typography,
+} from "@material-tailwind/react";
+import React from "react";
+import { Link,useLocation, useNavigate } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
+import AuthService from "../services/AuthService";
+
+
+export function LoginPage() {
+  const [loginForm, setLoginForm] = React.useState({
+    email: '',
+    password: ''
+  })
+  const [message, setMessage] = React.useState('')
+  const location = useLocation()
+  const emailRegistered = location?.state?.emailRegistered
+
+  if (emailRegistered) {
+    setLoginForm({...loginForm, email: emailRegistered})
+  }
+
+  const { login } = useUserContext();
+  const { email } = loginForm;
+  const handleLogin = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    AuthService.login(loginForm)
+      .then(response => {
+        if (response.data.access_token) {
+          const user = {
+            email,
+            accessToken: response.data.access_token
+          };
+          login(user);
+          setLoginForm({email: '', password: ''})
+          window.location.href = '/task';
+        } else {
+          setMessage(`Login failed ! ${response.data.message}`)
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        setMessage(`Login failed ! ${error.response.data.message}`)
+      })
+    };
     return (
       <section className="m-8 flex gap-4">
         <div className="w-full lg:w-3/5 mt-24">
@@ -25,9 +63,16 @@ export function LoginPage () {
                 size="lg"
                 placeholder="name@mail.com"
                 className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                value={loginForm.email}
+                onChange={ e => {
+                  setLoginForm({
+                    ...loginForm,
+                    email: e.target.value
+                  })
+                }}
                 labelProps={{
                   className: "before:content-none after:content-none",
-                }} crossOrigin={''}              />
+                }} crossOrigin={''} />
               <Typography placeholder={''} variant="small" color="blue-gray" className="-mb-3 font-medium">
                 Password
               </Typography>
@@ -36,6 +81,13 @@ export function LoginPage () {
                 size="lg"
                 placeholder="********"
                 className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                value={loginForm.password}
+                onChange={ e => {
+                  setLoginForm({
+                    ...loginForm,
+                    password: e.target.value
+                  })
+                }}
                 labelProps={{
                   className: "before:content-none after:content-none",
                 }}
@@ -45,7 +97,7 @@ export function LoginPage () {
             <Button className="mt-6" fullWidth placeholder={''}>
               Sign In
             </Button>
-  
+
             <div className="space-y-4 mt-8">
               <Button placeholder={''} size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
                 <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,7 +121,7 @@ export function LoginPage () {
               <Link to="/auth/sign-up" className="text-gray-900 ml-1">Create account</Link>
             </Typography>
           </form>
-  
+
         </div>
         <div className="w-2/5 h-full hidden lg:block">
           <img
@@ -77,10 +129,9 @@ export function LoginPage () {
             className="h-full w-full object-cover rounded-3xl"
           />
         </div>
-  
+
       </section>
     );
   }
-  
+
   export default LoginPage;
-  

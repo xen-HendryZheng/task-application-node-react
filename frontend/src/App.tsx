@@ -12,9 +12,7 @@ function App() {
     <HeaderNav/>
     <Routes>
       <Route path="/task" element={
-          <ProtectedRoute>
-            <TaskPage />
-          </ProtectedRoute>
+          <TaskPage />
       } />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
