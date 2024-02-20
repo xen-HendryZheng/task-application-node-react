@@ -14,7 +14,7 @@ const doWork = async (taskService: TaskService) => {
 export const worker = async (taskService: TaskService) => {
     // Worker runner
     // eslint-disable-next-line
-    console.log(`Current time is ${new Date()} | Worker is initializing and starting now`);
+    console.log(`Worker is initializing and starting now | Current time is ${new Date().toISOString()} | Days due soon: ${DAYS_DUE_SOON} | Limit batch worker: ${LIMIT_BATCH_WORKER}`);
     while (true) {
         try {
             await doWork(taskService); // eslint-disable-line

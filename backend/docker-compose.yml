@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   postgres:
-    image: 'postgres:10.7'
+    image: 'postgres:16.7'
     environment:
       - POSTGRES_USER=testuser
       - POSTGRES_PASSWORD=testpass
@@ -10,6 +10,13 @@ services:
       - 5432:5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    volumes:
+      - ./ch_data:/var/lib/clickhouse/
+      - ./ch_logs:/var/log/clickhouse-server/
+    ulimits:
+      nofile: 262144
   web:
     env_file:
     - .env

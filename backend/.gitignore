@@ -107,6 +107,8 @@ build
 #docker-volume
 postgres-data
 postgres-test-data
+ch_data
+ch_logs
 
 # dockest generated file
 docker-compose.dockest-generated.yml

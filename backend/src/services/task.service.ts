@@ -1,5 +1,4 @@
 import { Task } from 'src/typeorm/entities/task';
-import { AppDataSource } from '../data-source';
 import { ErrorCodes, StandardError } from '../libs/error';
 import moment from 'moment';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
