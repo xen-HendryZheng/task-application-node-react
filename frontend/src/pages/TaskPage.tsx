@@ -10,10 +10,9 @@ import {
     CardFooter
 } from "@material-tailwind/react";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TaskFormDialog from "../components/dialog/TaskForm";
 import TaskService from "../services/TaskService";
-import { AlertContext } from "../components/alert/Alert";
 import moment from "moment";
 import * as _ from 'lodash';
 

@@ -11,3 +11,5 @@ export const JWT_SECRET = process.env.JWT_SECRET || 'HELLO_WORLD';
 export const USER_SESSION = 'user';
 export const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 export const JWT_DURATION_HOUR = Number(process.env.JWT_DURATION_HOUR) || 24;
+export const DAYS_DUE_SOON = Number(process.env.DAYS_DUE_SOON) || 7;
+export const LIMIT_BATCH_WORKER = Number(process.env.LIMIT_BATCH_WORKER) || 100;
