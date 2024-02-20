@@ -1,0 +1,29 @@
+import { API_ENDPOINT } from './config';
+import axiosInstance from './AxioService';
+
+
+class TaskService {
+    createTask(taskName: string, description: string, due_date: string) {
+        return axiosInstance
+            .post(API_ENDPOINT.TASKS, {
+                task_name: taskName,
+                description,
+                due_date
+            });
+    }
+    patchTask(taskName: string, description: string, due_date: string) {
+        return axiosInstance
+            .patch(API_ENDPOINT.TASKS, {
+                task_name: taskName,
+                description,
+                due_date
+            });
+    }
+    getTask(params?: string) {
+        return axiosInstance
+            .get( params ? API_ENDPOINT.TASKS+'?'+params : API_ENDPOINT.TASKS);
+    }
+}
+
+// eslint-disable-next-line import/no-anonymous-default-export
+export default new TaskService();

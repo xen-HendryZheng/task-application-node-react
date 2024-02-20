@@ -10,6 +10,7 @@ export interface ITaskResponse {
     task_description: string;
     task_due_date: string;
     task_status: string;
+    task_created: string;
 }
 
 export class TaskController {
@@ -46,7 +47,8 @@ export class TaskController {
                 task_name: item.taskName,
                 task_description: item.taskDescription,
                 task_due_date: moment(item.taskDueDate).format(),
-                task_status: item.taskStatus
+                task_status: item.taskStatus,
+                task_created: moment(item.taskCreated).format()
             }
             return res.status(201).json(response);
         } catch (err) {
@@ -64,7 +66,8 @@ export class TaskController {
                     task_name: item.taskName,
                     task_description: item.taskDescription,
                     task_due_date: moment(item.taskDueDate).format(),
-                    task_status: item.taskStatus
+                    task_status: item.taskStatus,
+                    task_created: moment(item.taskCreated).format()
                 }
             });
             return res.status(200).json(response);
@@ -88,7 +91,8 @@ export class TaskController {
                 task_name: item.taskName,
                 task_description: item.taskDescription,
                 task_due_date: moment(item.taskDueDate).format(),
-                task_status: item.taskStatus
+                task_status: item.taskStatus,
+                task_created: moment(item.taskCreated).format()
             }
             return res.status(200).json(response);
         } catch (err) {

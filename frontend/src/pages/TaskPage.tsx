@@ -3,29 +3,42 @@ import {
     CardHeader,
     CardBody,
     Typography,
-    Avatar,
-    Chip,
-    Tooltip,
-    Progress,
     Button,
     Input,
     CardFooter
 } from "@material-tailwind/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
-import authorsTableData from "../data/authors-table-data";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TaskFormDialog from "../components/dialog/TaskForm";
+import TaskService from "../services/TaskService";
+import { AlertContext } from "../components/alert/Alert";
+import moment from "moment";
+import * as _ from 'lodash';
 
 //Generate a simple task page with a form to add a task and a list of tasks in react
 const TaskPage = () => {
-    const [searchKeyword, setSearchKeyword] = React.useState("");
+    const { showAlert } = useContext(AlertContext);
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);
+    const [tasks, setTasks] = useState([])
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchKeyword(e.target.value);
-    const [openDialog, setOpenDialog] = React.useState(false);
+    function formatDate (date: string) {
+        return moment(date).format('llll')
+    }
+
+    useEffect(() => {
+        TaskService.getTask().then(response => {
+            setTasks(response.data);
+        }).catch(error => {
+            console.log(error);
+            // setMessage(`Login failed ! ${error.response.data.message}`)
+            showAlert(`Task Creation failed ! ${error.response.data.message}`, 'error')
+        })
+    })
 
     return (
         <>
-            <TaskFormDialog openDialog={openDialog} handler={() => { setOpenDialog(!openDialog) }} />
+            <TaskFormDialog openDialog={openDialog} closeHandler={() => { setOpenDialog(!openDialog) }} />
             <div className="mt-12 mb-8 flex flex-col gap-12">
                 <Card placeholder={''}>
                     <CardHeader placeholder={''} className="mb-8 p-6">
@@ -68,7 +81,7 @@ const TaskPage = () => {
                         <table className="w-full min-w-[640px] table-auto">
                             <thead>
                                 <tr>
-                                    {["id", "created", "task", "description", "due date", "status"].map((el) => (
+                                    {["id",  "task", "description", "due date", "created", "status", "action"].map((el) => (
                                         <th
                                             key={el}
                                             className="border-b border-blue-gray-50 py-3 px-5 text-left"
@@ -85,50 +98,44 @@ const TaskPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {authorsTableData.map(
-                                    ({ img, name, email, job, online, date }, key) => {
-                                        const className = `py-3 px-5 ${key === authorsTableData.length - 1
+                                {tasks.map(
+                                    ({ task_id, task_name, task_created, task_description, task_due_date, task_status }, key) => {
+                                        const className = `py-3 px-5 ${key === tasks.length - 1
                                             ? ""
                                             : "border-b border-blue-gray-50"
                                             }`;
 
                                         return (
-                                            <tr key={name}>
-                                                <td className={className}>
-                                                    <div className="flex items-center gap-4">
-                                                        <Avatar src={img} alt={name} size="sm" variant="rounded" placeholder={''} />
-                                                        <div>
-                                                            <Typography
-                                                                variant="small"
-                                                                color="blue-gray"
-                                                                className="font-semibold" placeholder={''} >
-                                                                {name}
-                                                            </Typography>
-                                                            <Typography placeholder={''} className="text-xs font-normal text-blue-gray-500">
-                                                                {email}
-                                                            </Typography>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                            <tr key={task_id}>
                                                 <td className={className}>
                                                     <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
-                                                        {job[0]}
+                                                        {task_id}
                                                     </Typography>
-                                                    <Typography placeholder={''} className="text-xs font-normal text-blue-gray-500">
-                                                        {job[1]}
+                                                </td>
+                                                
+                                                <td className={className}>
+                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                        {task_name}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>
-                                                    <Chip
-                                                        variant="gradient"
-                                                        color={online ? "green" : "blue-gray"}
-                                                        value={online ? "online" : "offline"}
-                                                        className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                                                    />
+                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                        {task_description}
+                                                    </Typography>
                                                 </td>
                                                 <td className={className}>
-                                                    <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
-                                                        {date}
+                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                        {formatDate(task_due_date)}
+                                                    </Typography>
+                                                </td>
+                                                <td className={className}>
+                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                        {formatDate(task_created)}
+                                                    </Typography>
+                                                </td>
+                                                <td className={className}>
+                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                        {_.startCase(task_status)}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>

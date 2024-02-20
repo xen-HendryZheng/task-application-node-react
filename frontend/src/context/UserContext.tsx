@@ -35,12 +35,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const localUser = JSON.parse(localStorage.getItem('user') as string) || undefined;
     let [user, setUser] = useState(localUser);
 
-    const login = (user: User) => {
+    function login(user: User) {
+        console.log(user);
         localStorage.setItem('user', JSON.stringify(user))
         setUser(user)
     }
 
-    const logout = () => {
+    function logout() {
         setUser(null)
         localStorage.clear();
     }

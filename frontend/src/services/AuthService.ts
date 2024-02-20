@@ -7,11 +7,11 @@ interface LoginForm {
 }
 
 class AuthService {
-    login = (loginForm: LoginForm) => {
+    login(loginForm: LoginForm) {
         return axiosInstance
             .post(API_ENDPOINT.LOGIN, loginForm);
     };
-    register = (email: string, password: string) => {
+    register(email: string, password: string) {
         console.log(axiosInstance.post)
         return axiosInstance
             .post(API_ENDPOINT.REGISTER, {
@@ -20,7 +20,7 @@ class AuthService {
             });
     };
 
-    logout = () => {
+    logout() {
         localStorage.removeItem('user');
     };
 }

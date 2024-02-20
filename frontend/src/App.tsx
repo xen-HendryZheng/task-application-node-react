@@ -5,22 +5,32 @@ import RegisterPage from "./pages/RegisterPage";
 import Footer from "./components/Footer";
 import HeaderNav from "./components/HeaderNav";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { UserProvider } from "./context/UserContext";
+import { AlertProvider } from "./components/alert/Alert";
 
 function App() {
   return (
     <>
-    <HeaderNav/>
-    <Routes>
-      <Route path="/task" element={
-          <TaskPage />
-      } />
-      <Route path="/auth/login" element={<LoginPage />} />
-      <Route path="/auth/register" element={<RegisterPage />} />
-      <Route path="*" element={<Navigate to="/task" replace />} />
-    </Routes>
-    <Footer/>
+     <AlertProvider>
+      <UserProvider>
+        <Routes>
+          <Route path="/task" element={
+              <ProtectedRoute>
+                <>
+                <HeaderNav />
+                <TaskPage />
+                </>
+              </ProtectedRoute>
+          } />
+          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/register" element={<RegisterPage />} />
+          <Route path="*" element={<Navigate to="/task" replace />} />
+        </Routes>
+        <Footer />
+      </UserProvider>
+      </AlertProvider>
     </>
-    
+
   );
 }
 

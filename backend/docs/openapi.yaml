@@ -159,22 +159,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
-  /task:
     patch:
       summary: Update a task
-      parameters:
-        - name: id
-          in: query
-          description: ID of the task to update
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskInput'
+              $ref: '#/components/schemas/TaskPatch'
       responses:
         '200':
           description: The updated task
@@ -280,8 +272,15 @@ components:
     TaskPatch:
       type: object
       properties:
-        item_id:
+        task_id:
           type: number
+        task_name:
+          type: string
+        description:
+          type: string
+        due_date:
+          type: string
+          format: date-time
     Auth:
       type: object
       required:
