@@ -11,9 +11,10 @@ class TaskService {
                 due_date
             });
     }
-    patchTask(taskName: string, description: string, due_date: string) {
+    patchTask(taskId: number, taskName: string, description: string, due_date: string) {
         return axiosInstance
             .patch(API_ENDPOINT.TASKS, {
+                task_id: taskId,
                 task_name: taskName,
                 description,
                 due_date

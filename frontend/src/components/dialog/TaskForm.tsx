@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     Button,
     Dialog,
@@ -17,14 +17,16 @@ import { AlertContext } from "../alert/Alert";
 interface TaskFormProps {
     openDialog: boolean;
     closeHandler: () => void;
-    taskObject?: {
+    isNewTask: boolean;
+    taskObject: {
+        taskId: number;
         taskName: string;
         description: string;
         dueDate: string
     }
 }
 
-export function TaskFormDialog({ openDialog, closeHandler, taskObject }: TaskFormProps) {
+export function TaskFormDialog({ openDialog, closeHandler, isNewTask, taskObject }: TaskFormProps) {
     const { showAlert } = useContext(AlertContext);
     const [errorMessage, setErrorMessage] = useState('');
     const [taskForm, setTaskForm] = useState({
@@ -32,48 +34,56 @@ export function TaskFormDialog({ openDialog, closeHandler, taskObject }: TaskFor
         description: '',
         dueDate: ''
     })
-    if (taskObject) {
-        setTaskForm(taskObject)
-    }
-    async function handleTaskUpdate(e: { preventDefault: () => void }) {
-        e.preventDefault();
-        const { taskName, description, dueDate } = taskForm;
-        const dueDateIso = new Date(dueDate).toISOString();
-
-        TaskService.patchTask(taskName, description, dueDateIso).then(response => {
-            if (response.status === 201) {
-                showAlert(`Task ${response.data.task_name} Created Successfully`, 'success');
-                closeHandler();
-            } else {
-                setErrorMessage(`Task Creation failed ! ${response.data.message}`)
-            }
-        }).catch(error => {
-            console.log(error);
-            // setMessage(`Login failed ! ${error.response.data.message}`)
-            setErrorMessage(`Task Creation failed ! ${error.response.data.message}`)
-        })
+    useEffect(()=>{
+        if (openDialog && !isNewTask && taskObject) {
+            setTaskForm({
+                taskName: taskObject.taskName,
+                description: taskObject.description,
+                dueDate: taskObject.dueDate
+            })
+        }
+    },[openDialog, isNewTask, taskObject])
+    
     async function handleTaskSubmit(e: { preventDefault: () => void }) {
         e.preventDefault();
         const { taskName, description, dueDate } = taskForm;
         const dueDateIso = new Date(dueDate).toISOString();
 
-        TaskService.createTask(taskName, description, dueDateIso).then(response => {
-            if (response.status === 201) {
-                showAlert(`Task ${response.data.task_name} Created Successfully`, 'success');
-                closeHandler();
-            } else {
-                setErrorMessage(`Task Creation failed ! ${response.data.message}`)
-            }
-        }).catch(error => {
-            console.log(error);
-            // setMessage(`Login failed ! ${error.response.data.message}`)
-            setErrorMessage(`Task Creation failed ! ${error.response.data.message}`)
-        })
+        if (!isNewTask && taskObject) {
+            const { taskId } = taskObject;
+            TaskService.patchTask(taskId, taskName, description, dueDateIso).then(response => {
+                if (response.status === 201) {
+                    showAlert(`Task ${response.data.task_name} Updated Successfully`, 'success');
+                    closeHandler();
+                } else {
+                    setErrorMessage(`Task Update failed ! ${response.data.message}`)
+                }
+            }).catch(error => {
+                console.log(error);
+                // setMessage(`Login failed ! ${error.response.data.message}`)
+                setErrorMessage(`Task Update failed ! ${error.response.data.message}`)
+            })
+        } else {
+            TaskService.createTask(taskName, description, dueDateIso).then(response => {
+                if (response.status === 201) {
+                    showAlert(`Task ${response.data.task_name} Created Successfully`, 'success');
+                    closeHandler();
+                } else {
+                    setErrorMessage(`Task Creation failed ! ${response.data.message}`)
+                }
+            }).catch(error => {
+                console.log(error);
+                // setMessage(`Login failed ! ${error.response.data.message}`)
+                setErrorMessage(`Task Creation failed ! ${error.response.data.message}`)
+            })
+        }
+
+        
     }
     return (
         <>
             <Dialog placeholder={''} open={openDialog} handler={closeHandler}>
-                <form onSubmit={taskObject ? handleTaskUpdate : handleTaskSubmit} className="mt-5 mb-2 max-w-screen-lg">
+                <form onSubmit={handleTaskSubmit} className="mt-5 mb-2 max-w-screen-lg">
                     <DialogHeader placeholder={''}>Add New Task.</DialogHeader>
                     {errorMessage && <Alert className="m-5 w-100" color="red">{errorMessage}</Alert>}
                     <DialogBody placeholder={''}>

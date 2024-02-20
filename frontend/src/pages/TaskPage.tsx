@@ -21,24 +21,39 @@ const TaskPage = () => {
     const [searchKeyword, setSearchKeyword] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [tasks, setTasks] = useState([])
+    const [isNewTask, setIsNewTask] = useState(false);
+    const [taskEditObject, setTaskEditObject] = useState({
+        taskId: 0,
+        taskName: '',
+        description: '',
+        dueDate: ''
+    })
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchKeyword(e.target.value);
-    function formatDate (date: string) {
+    function formatDate(date: string) {
         return moment(date).format('llll')
     }
-
-    useEffect(() => {
-        TaskService.getTask().then(response => {
-            setTasks(response.data);
-        }).catch(error => {
-            console.log(error);
-            // setMessage(`Login failed ! ${error.response.data.message}`)
-            showAlert(`Task Creation failed ! ${error.response.data.message}`, 'error')
+    function editTask(taskId: number, taskName: string, description: string, dueDate: string) {
+        setIsNewTask(false)
+        setTaskEditObject({
+            taskId,
+            taskName,
+            description,
+            dueDate
         })
-    })
+        setOpenDialog(true)
+    }
+
+    async function getTasks() {
+        const response = await TaskService.getTask();
+        setTasks(response.data);
+    }
+    useEffect(() => {
+        getTasks();
+    }, [])
 
     return (
         <>
-            <TaskFormDialog openDialog={openDialog} closeHandler={() => { setOpenDialog(!openDialog) }} />
+            <TaskFormDialog openDialog={openDialog} closeHandler={() => { setOpenDialog(!openDialog); }} isNewTask={isNewTask} taskObject={taskEditObject} />
             <div className="mt-12 mb-8 flex flex-col gap-12">
                 <Card placeholder={''}>
                     <CardHeader placeholder={''} className="mb-8 p-6">
@@ -81,7 +96,7 @@ const TaskPage = () => {
                         <table className="w-full min-w-[640px] table-auto">
                             <thead>
                                 <tr>
-                                    {["id",  "task", "description", "due date", "created", "status", "action"].map((el) => (
+                                    {["id", "task", "description", "due date", "created", "status", "action"].map((el) => (
                                         <th
                                             key={el}
                                             className="border-b border-blue-gray-50 py-3 px-5 text-left"
@@ -112,34 +127,35 @@ const TaskPage = () => {
                                                         {task_id}
                                                     </Typography>
                                                 </td>
-                                                
+
                                                 <td className={className}>
-                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                    <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
                                                         {task_name}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>
-                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                    <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
                                                         {task_description}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>
-                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                    <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
                                                         {formatDate(task_due_date)}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>
-                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                    <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
                                                         {formatDate(task_created)}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>
-                                                <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
+                                                    <Typography placeholder={''} className="text-xs font-semibold text-blue-gray-600">
                                                         {_.startCase(task_status)}
                                                     </Typography>
                                                 </td>
                                                 <td className={className}>
                                                     <Typography
+                                                        onClick={()=>editTask(task_id, task_name, task_description, task_due_date)}
                                                         placeholder={''}
                                                         as="a"
                                                         href="#"
