@@ -16,8 +16,19 @@ export class TaskService {
     return this.taskRepository.save(newItem);
   }
 
-  async getItems(userId: number): Promise<Task[]> {
-    return this.taskRepository.find({ where: { userId } });
+  async getItems(userId: number, sortByCreated?: "ASC" | "DESC", sortByDue?:  "ASC" | "DESC", search?: string): Promise<Task[]> {
+    const query = this.taskRepository.createQueryBuilder('task');
+    query.where('task.userId = :userId', { userId });
+    if (sortByCreated) {
+      query.orderBy('task.taskCreated', sortByCreated);
+    }
+    if (sortByDue) {
+      query.orderBy('task.taskDueDate', sortByDue);
+    }
+    if (search) {
+      query.andWhere('task.taskName ILIKE :search', { search: `%${search}%` });
+    }
+    return query.getMany();
   }
 
   async getItem(taskId: number, userId: number): Promise<Task> {

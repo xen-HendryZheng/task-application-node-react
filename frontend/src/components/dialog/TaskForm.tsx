@@ -13,6 +13,7 @@ import {
 } from "@material-tailwind/react";
 import TaskService from "../../services/TaskService";
 import { AlertContext } from "../alert/Alert";
+import moment from 'moment'
 
 interface TaskFormProps {
     openDialog: boolean;
@@ -39,7 +40,7 @@ export function TaskFormDialog({ openDialog, closeHandler, isNewTask, taskObject
             setTaskForm({
                 taskName: taskObject.taskName,
                 description: taskObject.description,
-                dueDate: taskObject.dueDate
+                dueDate: moment(taskObject.dueDate).format('YYYY-MM-DD')
             })
         }
     },[openDialog, isNewTask, taskObject])
@@ -52,7 +53,7 @@ export function TaskFormDialog({ openDialog, closeHandler, isNewTask, taskObject
         if (!isNewTask && taskObject) {
             const { taskId } = taskObject;
             TaskService.patchTask(taskId, taskName, description, dueDateIso).then(response => {
-                if (response.status === 201) {
+                if (response.status === 200) {
                     showAlert(`Task ${response.data.task_name} Updated Successfully`, 'success');
                     closeHandler();
                 } else {
@@ -85,7 +86,7 @@ export function TaskFormDialog({ openDialog, closeHandler, isNewTask, taskObject
             <Dialog placeholder={''} open={openDialog} handler={closeHandler}>
                 <form onSubmit={handleTaskSubmit} className="mt-5 mb-2 max-w-screen-lg">
                     <DialogHeader placeholder={''}>Add New Task.</DialogHeader>
-                    {errorMessage && <Alert className="m-5 w-100" color="red">{errorMessage}</Alert>}
+                    {errorMessage && <Alert className="m-5 w-100" onClose={()=>{setErrorMessage('')}} color="red">{errorMessage}</Alert>}
                     <DialogBody placeholder={''}>
                         <hr />
 
@@ -168,7 +169,7 @@ export function TaskFormDialog({ openDialog, closeHandler, isNewTask, taskObject
                             <span>Cancel</span>
                         </Button>
                         <Button type="submit" placeholder={''} variant="gradient" color="green">
-                            <span>Add Task</span>
+                            <span>{isNewTask ? 'Add Task' : 'Update Task'}</span>
                         </Button>
                     </DialogFooter>
                 </form>

@@ -125,7 +125,12 @@ paths:
     get:
       summary: Retrieve tasks
       parameters:
-        - name: sort
+        - name: sortByCreated
+          in: query
+          description: Sort tasks by a specific criterion
+          schema:
+            type: string
+        - name: sortByDue
           in: query
           description: Sort tasks by a specific criterion
           schema:

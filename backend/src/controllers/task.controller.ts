@@ -58,8 +58,9 @@ export class TaskController {
     }
     public async getTasks(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
+            const { sortByCreated, sortByDue, search } = req.query;
             const user = await getUserSession() as any;
-            const items = await this.taskService.getItems(user.user_id);
+            const items = await this.taskService.getItems(user.user_id, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
             const response: ITaskResponse[] = items.map(item => {
                 return {
                     task_id: item.taskId,

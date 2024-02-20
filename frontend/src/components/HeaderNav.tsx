@@ -6,9 +6,18 @@ import {
   Button,
   IconButton,
 } from "@material-tailwind/react";
+import { useUserContext } from '../context/UserContext'
+import { useNavigate } from 'react-router-dom'
+
  
 export function HeaderNav() {
   const [openNav, setOpenNav] = React.useState(false);
+  const { user, logout } = useUserContext()
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    logout()
+    navigate('/auth/login', { replace: true })
+  }
  
   React.useEffect(() => {
     window.addEventListener(
@@ -84,17 +93,10 @@ export function HeaderNav() {
         </Typography>
         <div className="hidden lg:block">{navList}</div>
         <div className="flex items-center gap-x-1">
-          <Button placeholder={''} variant="text" size="sm" className="hidden lg:inline-block">
+          <Button onClick={handleLogout} placeholder={''} variant="text" size="sm" className="hidden lg:inline-block">
             <span>Sign Out</span>
           </Button>
-          <Button
-            placeholder={''}
-            variant="gradient"
-            size="sm"
-            className="hidden lg:inline-block"
-          >
-            <span>Sign in</span>
-          </Button>
+         
         </div>
         <IconButton
             placeholder={''}
@@ -139,11 +141,8 @@ export function HeaderNav() {
         <div className="container mx-auto">
           {navList}
           <div className="flex items-center gap-x-1">
-            <Button placeholder={''} fullWidth variant="text" size="sm" className="">
-              <span>Log In</span>
-            </Button>
-            <Button placeholder={''} fullWidth variant="gradient" size="sm" className="">
-              <span>Sign in</span>
+            <Button onClick={handleLogout} placeholder={''} fullWidth variant="gradient" size="sm" className="">
+              <span>Sign Out</span>
             </Button>
           </div>
         </div>

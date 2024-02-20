@@ -1,3 +1,5 @@
+/* eslint-disable no-script-url */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import {
     Card,
     CardHeader,
@@ -17,7 +19,9 @@ import * as _ from 'lodash';
 
 //Generate a simple task page with a form to add a task and a list of tasks in react
 const TaskPage = () => {
-    const { showAlert } = useContext(AlertContext);
+    const urlSearchParams = new URLSearchParams();
+    const [sortByCreated, setSortByCreated] = useState({ asc: false });
+    const [sortByDue, setSortByDue] = useState({ asc: false });
     const [searchKeyword, setSearchKeyword] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
     const [tasks, setTasks] = useState([])
@@ -43,8 +47,38 @@ const TaskPage = () => {
         setOpenDialog(true)
     }
 
+    function handleSort(field: string) {
+        let order = '';
+        switch (field) {
+            case 'Created':
+                setSortByCreated({ asc: !sortByCreated.asc })
+                order = sortByCreated.asc ? 'ASC' : 'DESC';
+                break;
+            case 'Due':
+                setSortByDue({ asc: !sortByDue.asc })
+                order = sortByDue.asc ? 'ASC' : 'DESC';
+                break;
+            default:
+                break;
+        }
+        // Set sorting criteria
+        urlSearchParams.set(`sortBy${field}`, order)
+        const urlParamsString = urlSearchParams.toString();
+        console.log(urlParamsString);
+        getTasks();
+    }
+
+    function handleSearch() {
+        if (searchKeyword === '') {
+            urlSearchParams.delete('search')
+        } else {
+            urlSearchParams.set('search', searchKeyword)
+        }
+        getTasks();
+    }
+
     async function getTasks() {
-        const response = await TaskService.getTask();
+        const response = await TaskService.getTask(urlSearchParams.toString());
         setTasks(response.data);
     }
     useEffect(() => {
@@ -64,6 +98,7 @@ const TaskPage = () => {
                                 className=""
                                 onClick={() => {
                                     setOpenDialog(true)
+                                    setIsNewTask(true)
                                 }}
                                 placeholder={''}>
                                 Add New
@@ -80,9 +115,10 @@ const TaskPage = () => {
                                     className: "min-w-0",
                                 }} crossOrigin={undefined} />
                             <Button
+                                onClick={handleSearch}
                                 size="sm"
                                 color={searchKeyword ? "gray" : "blue-gray"}
-                                disabled={!searchKeyword}
+                                // disabled={!searchKeyword}
                                 className="!absolute right-1 top-1 rounded"
                                 placeholder={''}>
                                 Search
@@ -90,26 +126,92 @@ const TaskPage = () => {
                         </div>
                     </CardHeader>
                     <CardBody placeholder={''} className="overflow-x-scroll px-0 pt-0 pb-2">
-
-
-
                         <table className="w-full min-w-[640px] table-auto">
                             <thead>
                                 <tr>
-                                    {["id", "task", "description", "due date", "created", "status", "action"].map((el) => (
-                                        <th
-                                            key={el}
-                                            className="border-b border-blue-gray-50 py-3 px-5 text-left"
-                                        >
-                                            <Typography
-                                                placeholder={''}
-                                                variant="small"
-                                                className="text-[11px] font-bold uppercase text-blue-gray-400"
-                                            >
-                                                {el}
-                                            </Typography>
-                                        </th>
-                                    ))}
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400">ID</Typography>
+                                    </th>
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400"  >
+                                            TASK
+                                        </Typography>
+                                    </th>
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400"  >
+                                            DESCRIPTION
+                                        </Typography>
+                                    </th>
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400"  >
+                                            DUE DATE
+                                            <button onClick={() => handleSort('Due')}>
+                                                {
+                                                    sortByDue.asc &&
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25" />
+                                                    </svg>
+                                                }
+                                                {
+                                                    !sortByDue.asc &&
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12" />
+                                                    </svg>
+                                                }
+                                            </button>
+
+                                        </Typography>
+                                    </th>
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400"  >
+                                            CREATED
+                                            <button onClick={() => handleSort('Created')}>
+                                                {
+                                                    sortByCreated.asc &&
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25" />
+                                                    </svg>
+                                                }
+                                                {
+                                                    !sortByCreated.asc &&
+                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12" />
+                                                    </svg>
+                                                }
+                                            </button>
+                                        </Typography>
+                                    </th>
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400"  >
+                                            STATUS
+                                        </Typography>
+                                    </th>
+                                    <th className="border-b border-blue-gray-50 py-3 px-5 text-left">
+                                        <Typography
+                                            placeholder={''}
+                                            variant="small"
+                                            className="flex text-[11px] font-bold uppercase text-blue-gray-400"  >
+                                            ACTION
+                                        </Typography>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -155,7 +257,7 @@ const TaskPage = () => {
                                                 </td>
                                                 <td className={className}>
                                                     <Typography
-                                                        onClick={()=>editTask(task_id, task_name, task_description, task_due_date)}
+                                                        onClick={() => editTask(task_id, task_name, task_description, task_due_date)}
                                                         placeholder={''}
                                                         as="a"
                                                         href="#"
