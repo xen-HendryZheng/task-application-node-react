@@ -11,9 +11,11 @@ export const connectToDatabase = async (): Promise<void> => {
                 HealthcheckController.databaseStatus = true;
             })
             .catch((err) => {
+                HealthcheckController.databaseStatus = false;
                 console.error("Error during Data Source initialization", err)
             })
     } catch (error) {
+        HealthcheckController.databaseStatus = false;
         console.error('Database connection error:', error);
         process.exit(1);
     }
@@ -42,10 +44,17 @@ export const connectToClickHouse = async (): Promise<ClickHouseClient> => {
         });
         const pingResult = await clickhouseClient.ping();
         console.log(pingResult);
-        pingResult.success ? console.log('ClickHouse connection established') : console.error('ClickHouse connection failed');
+        if (pingResult.success) {
+            HealthcheckController.clickhouseStatus = true;
+            console.log('ClickHouse connection established')
+        } else {
+            HealthcheckController.clickhouseStatus = false;
+            console.error('ClickHouse connection failed')
+        }
         return clickhouseClient;
     } catch (error) {
-        console.error('Database connection error:', error);
+        HealthcheckController.clickhouseStatus = false;
+        console.error('ClickHouse connection error:', error);
         process.exit(1);
     }
 };

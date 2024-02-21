@@ -1,3 +1,4 @@
+import { HealthcheckController } from "../controllers/healthcheck.controller";
 import { DAYS_DUE_SOON, LIMIT_BATCH_WORKER } from "../config";
 import { TaskService } from "../services/task.service";
 
@@ -6,9 +7,11 @@ function delay(ms: number) {
 }
 
 const doWork = async (taskService: TaskService) => {
-    await taskService.checkDueDateAndUpdateStatus(DAYS_DUE_SOON, LIMIT_BATCH_WORKER);
-    await taskService.checkOverDueDateAndUpdateStatus(LIMIT_BATCH_WORKER);
-    await delay(1000);
+    if (HealthcheckController.databaseStatus) {
+        await taskService.checkDueDateAndUpdateStatus(DAYS_DUE_SOON, LIMIT_BATCH_WORKER);
+        await taskService.checkOverDueDateAndUpdateStatus(LIMIT_BATCH_WORKER);
+        await delay(1000);
+    }
 };
 
 export const worker = async (taskService: TaskService) => {

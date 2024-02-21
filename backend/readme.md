@@ -47,7 +47,7 @@ The backend is composed of two services: `postgres` and `web`.
 - Environment variables:
   - POSTGRES_USER: testuser
   - POSTGRES_PASSWORD: testpass
-  - POSTGRES_DB: checkbox-system
+  - POSTGRES_DB: checkbox_system
 - Ports:
   - Host: 5432
   - Container: 5432

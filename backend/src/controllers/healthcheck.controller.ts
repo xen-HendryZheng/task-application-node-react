@@ -4,6 +4,7 @@ import { Request, Response, Router } from 'express';
 export class HealthcheckController {
 
     static databaseStatus: boolean = true;
+    static clickhouseStatus: boolean = true;
     private router: Router;
     constructor() {
         this.router = Router();
@@ -20,8 +21,11 @@ export class HealthcheckController {
     }
 
     static getHealthcheckReadiness(_: Request, res: Response) {
-        if (!HealthcheckController.databaseStatus) {
-            return res.status(500).json({ status: 'Database not ready' });
+        if (!HealthcheckController.databaseStatus || !HealthcheckController.clickhouseStatus) {
+            return res.status(500).json({ 
+                "database": HealthcheckController.databaseStatus ? "OK" : "Error",
+                "clickhouse": HealthcheckController.clickhouseStatus ? "OK" : "Error"
+             });
         } 
         return res.status(200).json({ status: 'OK' });
     }

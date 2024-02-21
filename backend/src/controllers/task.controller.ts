@@ -58,10 +58,14 @@ export class TaskController {
     }
     public async getTasks(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { sortByCreated, sortByDue, search } = req.query;
+            const { sortByCreated, sortByDue, search, page = 0 } = req.query;
             const user = await getUserSession() as any;
-            const results = await this.taskService.getItems(user.user_id, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
-            return res.status(200).json(results);
+            const [totalRecord, totalPage, results] = await this.taskService.getItems(user.user_id, page as number, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
+            return res.status(200).json({
+                total_record: totalRecord,
+                total_page: totalPage,
+                tasks: results
+            });
         } catch (err) {
             return next(err);
         }

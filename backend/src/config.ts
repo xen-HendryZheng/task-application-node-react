@@ -1,6 +1,6 @@
 
 // Envvars for default database connection
-export const PGDATABASE = process.env.PG_DATABASE || 'checkbox-system';
+export const PGDATABASE = process.env.PG_DATABASE || 'checkbox_system';
 export const PGHOST = process.env.PGHOST || 'localhost';
 export const PGPORT = Number(process.env.PGPORT) || 5432;
 export const PGUSER = process.env.PGUSER || 'testuser';
@@ -18,3 +18,5 @@ export const CLICKHOUSE_HOST = process.env.CLICKHOUSE_HOST || 'http://localhost:
 export const CLICKHOUSE_USER = process.env.CLICKHOUSE_USER || 'default';
 export const CLICKHOUSE_PASSWORD = process.env.CLICKHOUSE_PASSWORD || '';
 export const CLICKHOUSE_DATABASE = process.env.CLICKHOUSE_DATABASE || 'checkbox_system_postgres';
+
+export const LIMIT_PER_PAGE_RECORD = Number(process.env.LIMIT_PER_PAGE_RECORD) || 100;

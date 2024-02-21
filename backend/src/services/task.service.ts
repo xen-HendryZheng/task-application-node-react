@@ -5,6 +5,7 @@ import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { TaskLogService } from './task-log.service';
 import { ClickHouseClient } from '@clickhouse/client';
 import { ITaskResponse } from 'src/controllers/task.controller';
+import { LIMIT_PER_PAGE_RECORD } from '../config';
 
 export class TaskService {
   private readonly taskRepository: Repository<Task>;
@@ -22,10 +23,13 @@ export class TaskService {
     return this.taskRepository.save(newItem);
   }
 
-  async getItems(userId: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<ITaskResponse[]> {
+  async getItems(userId: number, page?: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<[Number, Number, ITaskResponse[]]> {
     let selectQuery = `SELECT task_id, task_name, task_description, task_status, task_due_date, task_created FROM task WHERE user_id = ${userId}`;
+    let totalCountQuery = `SELECT COUNT(*) as total FROM task WHERE user_id = ${userId}`;
+
     if (search) {
       selectQuery += ` AND task_name ILIKE '%${search}%'`;
+      totalCountQuery += ` AND task_name ILIKE '%${search}%'`;
     }
     if (sortByCreated) {
       selectQuery += ` ORDER BY task_created ${sortByCreated}`;
@@ -33,35 +37,53 @@ export class TaskService {
     if (sortByDue) {
       selectQuery += ` ORDER BY task_due_date ${sortByDue}`;
     }
-    console.log(selectQuery);
+    // Get Total Count before query
+    const totalResultSet = await this.clickhouseClient.query({ query: totalCountQuery, format:'JSONEachRow'});
+    const totalDataset = await totalResultSet.json() as any[];
+    const totalRecord = Number(totalDataset[0].total) || 0;
+    const totalPage = Math.ceil(totalRecord / LIMIT_PER_PAGE_RECORD);
+
+    if (page) {
+      const offset = (page - 1) * LIMIT_PER_PAGE_RECORD;
+      selectQuery += ` LIMIT ${LIMIT_PER_PAGE_RECORD} OFFSET ${offset}`;
+    } else {
+      selectQuery += ` LIMIT ${LIMIT_PER_PAGE_RECORD}`;
+    }
     const resultSet = await this.clickhouseClient.query({ query: selectQuery, format: 'JSONEachRow' });
     const dataset = await resultSet.json();
-    return dataset as ITaskResponse[];
+    return [totalRecord, totalPage, dataset as ITaskResponse[]];
   }
 
-  async getItemsFromDB(userId: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<ITaskResponse[]> {
-    const query = this.taskRepository.createQueryBuilder('task');
-    query.where('task.userId = :userId', { userId });
+  async getItemsFromDBWithPagination(userId: number, page?: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<[Number, Number, ITaskResponse[]]> {
+    const offset = page ? page * LIMIT_PER_PAGE_RECORD : 0;
+    const limit = LIMIT_PER_PAGE_RECORD;
+    const queryBuilder = this.taskRepository.createQueryBuilder('task');
+    queryBuilder.where('task.userId = :userId', { userId });
     if (sortByCreated) {
-      query.orderBy('task.taskCreated', sortByCreated);
+      queryBuilder.orderBy('task.taskCreated', sortByCreated);
     }
     if (sortByDue) {
-      query.orderBy('task.taskDueDate', sortByDue);
+      queryBuilder.orderBy('task.taskDueDate', sortByDue);
     }
     if (search) {
-      query.andWhere('task.taskName ILIKE :search', { search: `%${search}%` });
+      queryBuilder.andWhere('task.taskName ILIKE :search', { search: `%${search}%` });
     }
-    const result = await query.getMany();
-    return result.map(item => {
+    const totalCount = await queryBuilder.getCount();
+    const totalPage = Math.ceil(totalCount / LIMIT_PER_PAGE_RECORD);
+    console.log(totalCount)
+    queryBuilder.offset(offset);
+    queryBuilder.limit(limit);
+    const tasks = await queryBuilder.getMany();
+    return [totalCount, totalPage, tasks.map((task) => {
       return {
-        task_id: item.taskId,
-        task_name: item.taskName,
-        task_description: item.taskDescription,
-        task_due_date: moment(item.taskDueDate).format(),
-        task_status: item.taskStatus,
-        task_created: moment(item.taskCreated).format()
-      }
-    });
+        task_id: task.taskId,
+        task_name: task.taskName,
+        task_description: task.taskDescription,
+        task_due_date: moment(task.taskDueDate).format(),
+        task_status: task.taskStatus,
+        task_created: moment(task.taskCreated).format()
+      };
+    })];
   }
 
   async getItem(taskId: number, userId: number): Promise<Task> {

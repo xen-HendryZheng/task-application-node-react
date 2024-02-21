@@ -19,6 +19,9 @@ import * as _ from 'lodash';
 //Generate a simple task page with a form to add a task and a list of tasks in react
 const TaskPage = () => {
     const urlSearchParams = new URLSearchParams();
+    const [totalRecord, setTotalRecord] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [sortByCreated, setSortByCreated] = useState({ asc: false });
     const [sortByDue, setSortByDue] = useState({ asc: false });
     const [searchKeyword, setSearchKeyword] = useState('');
@@ -78,7 +81,9 @@ const TaskPage = () => {
 
     async function getTasks() {
         const response = await TaskService.getTask(urlSearchParams.toString());
-        setTasks(response.data);
+        setTasks(response.data.tasks);
+        setTotalRecord(response.data.total_record);
+        setTotalPage(response.data.total_page);
     }
     useEffect(() => {
         getTasks();
@@ -275,9 +280,82 @@ const TaskPage = () => {
                     <CardFooter
                         className="ml-6"
                         placeholder={''} >
+                            
                         <Typography className="float-right" placeholder={''} color="gray">
-                            Total Record 2560
+                        <div className="flex justify-between items-center mt-8">
+                            <div>
+                                <Button
+                                    size="sm"
+                                    color="blue-gray"
+                                    disabled={currentPage === 1}
+                                    onClick={() => {
+                                        setCurrentPage(currentPage - 1);
+                                        urlSearchParams.set('page', (currentPage - 1).toString());
+                                        getTasks();
+                                    }}
+                                    placeholder={''}>
+                                    Previous
+                                </Button>
+                                {
+                                    totalPage > 0 && Array.from(Array(Math.min(totalPage, 10)).keys()).map((page, index) => {
+                                        // Limit only up to 10 pages and show last page button
+                                        if (index === 9 && totalPage > 10) {
+                                            return (
+                                                <Button
+                                                    key={index}
+                                                    size="sm"
+                                                    color={currentPage === totalPage ? "red" : "blue-gray"} // Set different color for current page
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        setCurrentPage(totalPage);
+                                                        urlSearchParams.set('page', totalPage.toString());
+                                                        getTasks();
+                                                    }}
+                                                    placeholder={''}>
+                                                    Last
+                                                </Button>
+                                            );
+                                        } else {
+                                            return (
+                                                <Button
+                                                    key={index}
+                                                    size="sm"
+                                                    color={currentPage === page + 1 ? "red" : "blue-gray"} // Set different color for current page
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        setCurrentPage(page + 1);
+                                                        urlSearchParams.set('page', (page + 1).toString());
+                                                        getTasks();
+                                                    }}
+                                                    placeholder={''}>
+                                                    {page + 1}
+                                                </Button>
+                                            );
+                                        }
+                                    })
+                                }
+                                
+                                <Button
+                                    size="sm"
+                                    color="blue-gray"
+                                    disabled={currentPage === totalPage}
+                                    onClick={() => {
+                                        setCurrentPage(currentPage + 1);
+                                        urlSearchParams.set('page', (currentPage + 1).toString());
+                                        getTasks();
+                                    }}
+                                    placeholder={''}>
+                                    Next
+                                </Button>
+                            </div>
+                            
+                        </div>
+                        <div>
+                            Total Record {totalRecord}
+                            </div>
                         </Typography>
+                        
+
                     </CardFooter>
                 </Card>
             </div>
