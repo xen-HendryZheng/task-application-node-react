@@ -4,8 +4,8 @@ info:
   title: 'Checkbox System Swagger Docs'
   description: 'Checkbox System Swagger Docs for Jitera'
 servers:
-  # - description: Live API
-  #   url: 'https://backend.hendryzheng.com/'
+  - description: Live API
+    url: 'https://task-api.hendryzheng.com'
   - description: Local development
     url: 'http://localhost:3000'
 paths:
