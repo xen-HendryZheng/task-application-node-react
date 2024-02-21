@@ -8,8 +8,8 @@ function delay(ms: number) {
 
 const doWork = async (taskService: TaskService) => {
     if (HealthcheckController.databaseStatus) {
-        await taskService.checkDueDateAndUpdateStatus(DAYS_DUE_SOON, LIMIT_BATCH_WORKER);
-        await taskService.checkOverDueDateAndUpdateStatus(LIMIT_BATCH_WORKER);
+        taskService.checkDueDateAndUpdateStatus(DAYS_DUE_SOON, LIMIT_BATCH_WORKER);
+        taskService.checkOverDueDateAndUpdateStatus(LIMIT_BATCH_WORKER);
         await delay(1000);
     }
 };

@@ -7,7 +7,8 @@ import {
     Typography,
     Button,
     Input,
-    CardFooter
+    CardFooter,
+    Switch
 } from "@material-tailwind/react";
 
 import React, { useEffect, useState } from "react";
@@ -18,7 +19,8 @@ import * as _ from 'lodash';
 
 //Generate a simple task page with a form to add a task and a list of tasks in react
 const TaskPage = () => {
-    const urlSearchParams = new URLSearchParams();
+    const [urlSearchParams] = useState(new URLSearchParams());
+    const [useClickHouse, setUseClickHouse] = useState(false);
     const [totalRecord, setTotalRecord] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -74,13 +76,15 @@ const TaskPage = () => {
         if (searchKeyword === '') {
             urlSearchParams.delete('search')
         } else {
-            urlSearchParams.set('search', searchKeyword)
+            urlSearchParams.set('search', encodeURIComponent(searchKeyword))
         }
         getTasks();
     }
 
     async function getTasks() {
-        const response = await TaskService.getTask(urlSearchParams.toString());
+        const urlParamsString = urlSearchParams.toString();
+        console.log(urlParamsString);
+        const response = await TaskService.getTask(urlParamsString, useClickHouse.toString());
         setTasks(response.data.tasks);
         setTotalRecord(response.data.total_record);
         setTotalPage(response.data.total_page);
@@ -111,9 +115,10 @@ const TaskPage = () => {
                         <div className="mt-5 relative flex w-full max-w-[24rem]">
                             <Input
                                 type="text"
-                                label="Search (task name, description)"
+                                label="Search (task name)"
                                 value={searchKeyword}
                                 onChange={onChange}
+                                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
                                 className="pr-20"
                                 containerProps={{
                                     className: "min-w-0",
@@ -127,6 +132,9 @@ const TaskPage = () => {
                                 placeholder={''}>
                                 Search
                             </Button>
+                        </div>
+                        <div className="absolute right-1 top-20">
+                            <Switch defaultChecked={false} onChange={() => { setUseClickHouse(!useClickHouse) }} label="Use Clickhouse" className="float-right" crossOrigin={''} />
                         </div>
                     </CardHeader>
                     <CardBody placeholder={''} className="overflow-x-scroll px-0 pt-0 pb-2">
@@ -193,7 +201,7 @@ const TaskPage = () => {
                                                 }
                                                 {
                                                     !sortByCreated.asc &&
-                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12" />
                                                     </svg>
                                                 }
@@ -265,7 +273,7 @@ const TaskPage = () => {
                                                         placeholder={''}
                                                         as="a"
                                                         href="#"
-                                                        className="text-xs font-semibold text-blue-gray-600"
+                                                        className="text-xs font-semibold text-blue-600"
                                                     >
                                                         Edit
                                                     </Typography>
@@ -280,10 +288,8 @@ const TaskPage = () => {
                     <CardFooter
                         className="ml-6"
                         placeholder={''} >
-                            
-                        <Typography className="float-right" placeholder={''} color="gray">
-                        <div className="flex justify-between items-center mt-8">
-                            <div>
+                        <div className="float-right" color="gray">
+                            <div className="flex justify-between items-center mt-8">
                                 <Button
                                     size="sm"
                                     color="blue-gray"
@@ -334,7 +340,7 @@ const TaskPage = () => {
                                         }
                                     })
                                 }
-                                
+
                                 <Button
                                     size="sm"
                                     color="blue-gray"
@@ -348,13 +354,17 @@ const TaskPage = () => {
                                     Next
                                 </Button>
                             </div>
-                            
-                        </div>
-                        <div>
-                            Total Record {totalRecord}
+                            <div className="float-right mt-3">
+                                <Typography
+                                    placeholder={''}
+                                    variant="small"
+                                    className="text-xs font-semibold uppercase tracking-wide"
+                                    color="blue-gray">
+                                    <b>Total Record</b> : {totalRecord.toLocaleString()}
+                                </Typography>
                             </div>
-                        </Typography>
-                        
+                        </div>
+
 
                     </CardFooter>
                 </Card>

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { User } from "./user.entity";
 
 @Entity({ name: 'task' })
 export class Task {
@@ -7,6 +8,10 @@ export class Task {
 
     @Column({ name: 'user_id', type: 'int' })
     userId: number;
+
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'user_id' })
+    user: User;
 
     @Column({ name: 'task_name', type: 'text' })
     taskName: string;
@@ -17,10 +22,13 @@ export class Task {
     @Column({ name: 'task_status', type: 'enum', enum: ['not_urgent', 'due_soon', 'overdue'] })
     taskStatus: string = 'not_urgent';
 
-    @Column({ name: 'task_due_date', type: 'timestamp with time zone', nullable: true})
+    @Column({ name: 'task_due_date', type: 'timestamp with time zone', nullable: true })
     taskDueDate: Date | null = null;
 
     @Column({ name: 'task_created', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     taskCreated: Date | null = null;
+
+    @Column({ name: 'task_updated', type: 'timestamp with time zone', nullable: true, onUpdate: 'CURRENT_TIMESTAMP' })
+    taskUpdated: Date | null = null;
 
 }

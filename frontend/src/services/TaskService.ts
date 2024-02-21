@@ -20,9 +20,9 @@ class TaskService {
                 due_date
             });
     }
-    getTask(params?: string) {
+    getTask(params?: string, clickhouse?: string) {
         return axiosInstance
-            .get( params ? API_ENDPOINT.TASKS+'?'+params : API_ENDPOINT.TASKS);
+            .get(params ? API_ENDPOINT.TASKS + '?' + params : API_ENDPOINT.TASKS, { headers: { 'clickhouse': clickhouse || 'false' } });
     }
 }
 
