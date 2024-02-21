@@ -60,18 +60,8 @@ export class TaskController {
         try {
             const { sortByCreated, sortByDue, search } = req.query;
             const user = await getUserSession() as any;
-            const items = await this.taskService.getItems(user.user_id, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
-            const response: ITaskResponse[] = items.map(item => {
-                return {
-                    task_id: item.taskId,
-                    task_name: item.taskName,
-                    task_description: item.taskDescription,
-                    task_due_date: moment(item.taskDueDate).format(),
-                    task_status: item.taskStatus,
-                    task_created: moment(item.taskCreated).format()
-                }
-            });
-            return res.status(200).json(response);
+            const results = await this.taskService.getItems(user.user_id, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
+            return res.status(200).json(results);
         } catch (err) {
             return next(err);
         }

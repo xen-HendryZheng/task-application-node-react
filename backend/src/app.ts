@@ -7,16 +7,17 @@ import { init } from './init';
 import { errorHandler } from './middlewares/handle-error';
 import * as httpContext from 'express-http-context';
 import cors from 'cors';
+import { ClickHouseClient } from '@clickhouse/client';
 
-async function setupRoutes(app: Application) {
-    const { authController, healthcheckController, taskController } = await init();
+async function setupRoutes(app: Application, clickhouseClient: ClickHouseClient) {
+    const { authController, healthcheckController, taskController } = await init(clickhouseClient);
     app.use('/auth', authController.getRouter());
     app.use('/tasks', taskController.getRouter());
     app.use('/healthcheck', healthcheckController.getRouter());
 
 } 
 
-export async function createApp(): Promise<Application> {
+export async function createApp(clickhouseClient: ClickHouseClient): Promise<Application> {
     const app = express();
     app.use(cors());
     app.use(httpContext.middleware);
@@ -37,7 +38,7 @@ export async function createApp(): Promise<Application> {
 
 
     // Setup Routes
-    await setupRoutes(app);
+    await setupRoutes(app, clickhouseClient);
 
     // Error handler
     app.use(errorHandler());

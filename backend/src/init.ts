@@ -1,3 +1,4 @@
+import { ClickHouseClient } from "@clickhouse/client";
 import { AuthController } from "./controllers/auth.controller";
 import { HealthcheckController } from "./controllers/healthcheck.controller";
 import { TaskController } from "./controllers/task.controller";
@@ -9,7 +10,7 @@ import { Task } from "./typeorm/entities/task";
 import { TaskLog } from "./typeorm/entities/task-log";
 import { worker } from "./workers/task.worker";
 
-export async function init(): Promise<Record<string, any>> {
+export async function init(clickhouseClient: ClickHouseClient): Promise<Record<string, any>> {
 
     // initialize repo
     const taskRepository = AppDataSource.getRepository(Task);
@@ -17,7 +18,7 @@ export async function init(): Promise<Record<string, any>> {
     // initialize service
     const authService = new AuthService();
     const taskLogService = new TaskLogService(taskLogRepository)
-    const taskService = new TaskService(taskRepository, taskLogService);
+    const taskService = new TaskService(taskRepository, taskLogService, clickhouseClient);
 
     // Initialize controllers
     const authController = new AuthController(authService);

@@ -1,11 +1,14 @@
+import { ClickHouseClient } from '@clickhouse/client';
 import { createApp } from './app';
-import { connectToDatabase, closeDatabaseConnection } from './connect';
+import { connectToDatabase, closeDatabaseConnection, connectToClickHouse, closeClickHouseConnection } from './connect';
 
 const port = process.env.PORT || 3000;
+let clickhouseClient: ClickHouseClient | undefined = undefined;
 
 (async () => {
     await connectToDatabase();
-    const app = await createApp();
+    clickhouseClient = await connectToClickHouse();
+    const app = await createApp(clickhouseClient);
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
     });
@@ -13,5 +16,6 @@ const port = process.env.PORT || 3000;
 
 process.on('SIGINT', async () => {
     await closeDatabaseConnection();
+    await closeClickHouseConnection(clickhouseClient);
     process.exit(0);
 });

@@ -13,3 +13,8 @@ export const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 export const JWT_DURATION_HOUR = Number(process.env.JWT_DURATION_HOUR) || 24;
 export const DAYS_DUE_SOON = Number(process.env.DAYS_DUE_SOON) || 7;
 export const LIMIT_BATCH_WORKER = Number(process.env.LIMIT_BATCH_WORKER) || 100;
+
+export const CLICKHOUSE_HOST = process.env.CLICKHOUSE_HOST || 'http://localhost:8123';
+export const CLICKHOUSE_USER = process.env.CLICKHOUSE_USER || 'default';
+export const CLICKHOUSE_PASSWORD = process.env.CLICKHOUSE_PASSWORD || '';
+export const CLICKHOUSE_DATABASE = process.env.CLICKHOUSE_DATABASE || 'checkbox_system_postgres';
