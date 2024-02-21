@@ -19,7 +19,7 @@ npm install
 ```
 
 ## Database Table
-![Database Schme](./docs/ERD.jpg)
+![Database Schme](./docs/checkbox_task_erd.png)
 
 ## Project Structure 
 - src/ # Main source parent folder

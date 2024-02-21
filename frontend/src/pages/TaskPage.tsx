@@ -28,7 +28,7 @@ const TaskPage = () => {
     const [sortByDue, setSortByDue] = useState({ asc: false });
     const [searchKeyword, setSearchKeyword] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
-    const [tasks, setTasks] = useState([])
+    const [tasks, setTasks] = useState<any[]>([]); 
     const [isNewTask, setIsNewTask] = useState(false);
     const [taskEditObject, setTaskEditObject] = useState({
         taskId: 0,
@@ -95,7 +95,7 @@ const TaskPage = () => {
 
     return (
         <>
-            <TaskFormDialog openDialog={openDialog} closeHandler={() => { setOpenDialog(!openDialog); }} isNewTask={isNewTask} taskObject={taskEditObject} />
+            <TaskFormDialog openDialog={openDialog} taskCreatedHandler={(task: any) => {setTasks([task,...tasks])}} closeHandler={() => { setOpenDialog(!openDialog); }} isNewTask={isNewTask} taskObject={taskEditObject} />
             <div className="mt-12 mb-8 flex flex-col gap-12">
                 <Card placeholder={''}>
                     <CardHeader placeholder={''} className="mb-8 p-6">
