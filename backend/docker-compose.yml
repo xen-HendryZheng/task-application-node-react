@@ -10,6 +10,7 @@ services:
       - 5432:5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
   clickhouse:
     image: clickhouse/clickhouse-server
     volumes:
@@ -19,6 +20,7 @@ services:
       - "8123:8123" # Or any other desired port for the ClickHouse client
     ulimits:
       nofile: 262144
+    restart: unless-stopped
   web:
     env_file:
     - .env
@@ -35,3 +37,4 @@ services:
       - CLICKHOUSE_HOST=http://clickhouse:8123
     volumes:
       - ./:/app
+    restart: unless-stopped
