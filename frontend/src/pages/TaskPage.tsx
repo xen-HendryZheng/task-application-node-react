@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 
 //Generate a simple task page with a form to add a task and a list of tasks in react
 const TaskPage = () => {
+    const [showClickHouse, setShowClickHouse] = useState(false);
     const [urlSearchParams] = useState(new URLSearchParams());
     const [useClickHouse, setUseClickHouse] = useState(false);
     const [totalRecord, setTotalRecord] = useState(0);
@@ -100,7 +101,7 @@ const TaskPage = () => {
                 <Card placeholder={''}>
                     <CardHeader placeholder={''} className="mb-8 p-6">
                         <Typography placeholder={''} variant="h5" color="black">
-                            Task Listing <Button
+                            <span onClick={()=>{setShowClickHouse(!showClickHouse)}}>Task Listing</span> <Button
                                 size="sm"
                                 variant="gradient"
                                 className=""
@@ -133,7 +134,7 @@ const TaskPage = () => {
                                 Search
                             </Button>
                         </div>
-                        <div className="absolute right-1 top-20">
+                        <div className={ !showClickHouse ? 'hidden mt-5 relative flex w-full max-w-[24rem]' : 'mt-5 relative flex w-full max-w-[24rem]'}>
                             <Switch defaultChecked={false} onChange={() => { setUseClickHouse(!useClickHouse) }} label="Use Clickhouse" className="float-right" crossOrigin={''} />
                         </div>
                     </CardHeader>
