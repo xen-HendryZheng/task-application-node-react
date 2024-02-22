@@ -58,18 +58,18 @@ export class TaskController {
     }
     public async getTasks(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { sortByCreated, sortByDue, search, page = 0 } = req.query;
+            const { sortByCreated, sortByDue, search = '', page = 0 } = req.query;
             const { clickhouse } = req.headers;
             const user = await getUserSession() as any;
             if (clickhouse === 'true') {
-                const [totalRecord, totalPage, results] = await this.taskService.getItems(user.user_id, page as number, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
+                const [totalRecord, totalPage, results] = await this.taskService.getItems(user.user_id, page as number, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", decodeURIComponent(search as string));
                 return res.status(200).json({
                     total_record: totalRecord,
                     total_page: totalPage,
                     tasks: results
                 });
             } else {
-                const [totalRecord, totalPage, results] = await this.taskService.getItemsFromDBWithPagination(user.user_id, page as number, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", search as string);
+                const [totalRecord, totalPage, results] = await this.taskService.getItemsFromDBWithPagination(user.user_id, page as number, sortByCreated as "ASC" | "DESC", sortByDue as "ASC" | "DESC", decodeURIComponent(search as string));
                 return res.status(200).json({
                     total_record: totalRecord,
                     total_page: totalPage,

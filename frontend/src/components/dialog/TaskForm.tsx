@@ -26,9 +26,10 @@ interface TaskFormProps {
         dueDate: string
     }
     taskCreatedHandler: (task: any) => void;
+    taskUpdateHandler: () => void;
 }
 
-export function TaskFormDialog({ openDialog, closeHandler, taskCreatedHandler, isNewTask, taskObject }: TaskFormProps) {
+export function TaskFormDialog({ openDialog, closeHandler, taskCreatedHandler, taskUpdateHandler, isNewTask, taskObject }: TaskFormProps) {
     const { showAlert } = useContext(AlertContext);
     const [errorMessage, setErrorMessage] = useState('');
     const [taskForm, setTaskForm] = useState({
@@ -55,6 +56,7 @@ export function TaskFormDialog({ openDialog, closeHandler, taskCreatedHandler, i
             const { taskId } = taskObject;
             TaskService.patchTask(taskId, taskName, description, dueDateIso).then(response => {
                 if (response.status === 200) {
+                    taskUpdateHandler();
                     showAlert(`Task ${response.data.task_name} Updated Successfully`, 'success');
                     closeHandler();
                 } else {

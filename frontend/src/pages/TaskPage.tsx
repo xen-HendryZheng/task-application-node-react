@@ -88,7 +88,6 @@ const TaskPage = () => {
 
     async function getTasks() {
         const urlParamsString = urlSearchParams.toString();
-        console.log(urlParamsString);
         const response = await TaskService.getTask(urlParamsString, useClickHouse.toString());
         setTasks(response.data.tasks);
         setTotalRecord(response.data.total_record);
@@ -100,7 +99,7 @@ const TaskPage = () => {
 
     return (
         <>
-            <TaskFormDialog openDialog={openDialog} taskCreatedHandler={(task: any) => {setTasks([task,...tasks])}} closeHandler={() => { setOpenDialog(!openDialog); }} isNewTask={isNewTask} taskObject={taskEditObject} />
+            <TaskFormDialog openDialog={openDialog} taskCreatedHandler={(task: any) => {setTasks([task,...tasks])}} closeHandler={() => { setOpenDialog(!openDialog); }} isNewTask={isNewTask} taskUpdateHandler={()=>{getTasks()}} taskObject={taskEditObject} />
             <div className="mt-12 mb-8 flex flex-col gap-12">
                 <Card placeholder={''}>
                     <CardHeader placeholder={''} className="mb-8 p-6">
@@ -177,19 +176,19 @@ const TaskPage = () => {
                                             <button onClick={() => handleSort('Due')}>
                                                 {
                                                     sortByDue === '' &&
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                                     </svg>
 
                                                 }
                                                 {
-                                                    sortByDue === 'ASC' &&
+                                                    sortByDue === 'DESC' &&
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25" />
                                                     </svg>
                                                 }
                                                 {
-                                                    sortByDue === 'DESC' &&
+                                                    sortByDue === 'ASC' &&
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12" />
                                                     </svg>
@@ -207,19 +206,19 @@ const TaskPage = () => {
                                             <button onClick={() => handleSort('Created')}>
                                                 {
                                                     sortByCreated === '' &&
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                                     </svg>
 
                                                 }
                                                 {
-                                                    sortByCreated === 'ASC' &&
+                                                    sortByCreated === 'DESC' &&
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25" />
                                                     </svg>
                                                 }
                                                 {
-                                                    sortByCreated === 'DESC' &&
+                                                    sortByCreated === 'ASC' &&
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12" />
                                                     </svg>
