@@ -8,6 +8,11 @@ You can find live preview with the following link:
 - Backend API Doc : [https://task-api.hendryzheng.com/api-docs/](https://task-api.hendryzheng.com/api-docs/)
 - API Endpoint : [https://task-api.hendryzheng.com](https://task-api.hendryzheng.com)
 
+## Sample Account
+You can use the following credential as a testing account:
+- username: user@email.com
+- password: `password`
+
 ## Infrastructure Setup
 The infrastructure setup for this demo is using Firebase + Digital Ocean Environment with the following adoption usage:
 - Digital Ocean Droplet : To provision the backend node server runs on Dockerized environment

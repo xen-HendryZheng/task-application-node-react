@@ -26,16 +26,22 @@ export class TaskService {
   async getItems(userId: number, page?: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<[Number, Number, ITaskResponse[]]> {
     let selectQuery = `SELECT task_id, task_name, task_description, task_status, task_due_date, task_created FROM task WHERE user_id = ${userId}`;
     let totalCountQuery = `SELECT COUNT(*) as total FROM task WHERE user_id = ${userId}`;
-
+    let orderBy = '';
     if (search) {
       selectQuery += ` AND task_name ILIKE '%${search}%'`;
       totalCountQuery += ` AND task_name ILIKE '%${search}%'`;
     }
     if (sortByCreated) {
-      selectQuery += ` ORDER BY task_created ${sortByCreated}`;
+      orderBy += ` task_created ${sortByCreated}`;
     }
     if (sortByDue) {
-      selectQuery += ` ORDER BY task_due_date ${sortByDue}`;
+      if (orderBy) {
+        orderBy += ',';
+      }
+      orderBy += ` task_due_date ${sortByDue}`;
+    }
+    if (orderBy) {
+      selectQuery += ` ORDER BY ${orderBy}`;
     }
     // Get Total Count before query
     const totalResultSet = await this.clickhouseClient.query({ query: totalCountQuery, format:'JSONEachRow'});
