@@ -76,7 +76,6 @@ export class TaskService {
     }
     const totalCount = await queryBuilder.getCount();
     const totalPage = Math.ceil(totalCount / LIMIT_PER_PAGE_RECORD);
-    console.log(totalCount)
     queryBuilder.offset(offset);
     queryBuilder.limit(limit);
     const tasks = await queryBuilder.getMany();

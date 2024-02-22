@@ -1,6 +1,7 @@
 const { resolve } = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 module.exports = {
+    injectGlobals: true,
     transform: {
         '^.+\\.ts$': 'ts-jest'
     },
@@ -19,5 +20,6 @@ module.exports = {
     verbose: true,
     setupFiles: ['./jest.setup.ts'],
     setupFilesAfterEnv: ['jest-extended'],
-    globalSetup: './jest-global-setup.js'
+    globalSetup: './jest-global-setup.js',
+    testEnvironment: 'node',
 };
