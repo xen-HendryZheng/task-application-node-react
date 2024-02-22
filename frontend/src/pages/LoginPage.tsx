@@ -5,8 +5,8 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import React, { useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import AuthService from "../services/AuthService";
 import { AlertContext } from "../components/alert/Alert";
@@ -20,10 +20,6 @@ export function LoginPage() {
   const { showAlert } = useContext(AlertContext);
   const location = useLocation()
   const emailRegistered = location?.state?.emailRegistered
-
-  if (emailRegistered) {
-    setLoginForm({ ...loginForm, email: emailRegistered })
-  }
 
   const { login } = useUserContext();
   const { email } = loginForm;
@@ -49,6 +45,11 @@ export function LoginPage() {
         showAlert(`Login failed ! ${error.response.data.message}`, 'error')
       })
   };
+  useEffect(() => {
+    if (emailRegistered) {
+      setLoginForm({ ...loginForm, email: emailRegistered })
+    }
+  }, [loginForm])
   return (
     <section className="m-8 flex gap-4">
       <div className="w-full lg:w-3/5 mt-24">

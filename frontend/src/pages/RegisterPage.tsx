@@ -1,14 +1,40 @@
 import {
-    Input,
-    Button,
-    Typography,
-  } from "@material-tailwind/react";
-  import { Link } from "react-router-dom";
+  Input,
+  Button,
+  Typography,
+} from "@material-tailwind/react";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AlertContext } from "../components/alert/Alert";
+import AuthService from "../services/AuthService";
 
 export function RegisterPage() {
-return(
+  const [form, setForm] = useState({
+    email: '',
+    password: ''
+  })
+  const { showAlert } = useContext(AlertContext);
+  const navigate = useNavigate()
+
+  async function handleSubmit(e: { preventDefault: () => void }) {
+    e.preventDefault();
+    AuthService.register(form)
+      .then(response => {
+        if (response.status === 200){
+          navigate('/auth/login', { state: { emailRegistered: form.email } })
+          showAlert('Register success ! Please enter your password to login !', 'success')
+        } else {
+          showAlert(`Register failed ! ${response.data.message}`, 'error')
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        showAlert(`Register failed ! ${error.response.data.message}`, 'error')
+      })
+  };
+  return (
     <section className="m-8 flex">
-            <div className="w-2/5 h-full hidden lg:block">
+      <div className="w-2/5 h-full hidden lg:block">
         <img
           src="/img/pattern.png"
           className="h-full w-full object-cover rounded-3xl"
@@ -19,7 +45,7 @@ return(
           <Typography placeholder={''} variant="h2" className="font-bold mb-4">Join Us Today</Typography>
           <Typography placeholder={''} variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your email and password to register.</Typography>
         </div>
-        <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
+        <form onSubmit={handleSubmit} className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
           <div className="mb-5 flex flex-col gap-6">
             <Typography placeholder={''} variant="small" color="blue-gray" className="-mb-3 font-medium">
               Your email
@@ -28,6 +54,9 @@ return(
               size="lg"
               placeholder="name@mail.com"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+              required={true}
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
@@ -39,9 +68,12 @@ return(
               Your Password
             </Typography>
             <Input
-            type="password"
+              type="password"
               size="lg"
               placeholder="name@mail.com"
+              required={true}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -49,7 +81,7 @@ return(
               crossOrigin={''}
             />
           </div>
-          <Button placeholder={''} className="mt-6" fullWidth>
+          <Button type="submit" placeholder={''} className="mt-6" fullWidth>
             Register Now
           </Button>
 
@@ -70,9 +102,9 @@ return(
               </svg>
               <span>Sign in With Google</span>
             </Button> */}
-           
+
           </div>
-          <Typography  placeholder={''}variant="paragraph" className="text-center text-blue-gray-500 font-medium mt-4">
+          <Typography placeholder={''} variant="paragraph" className="text-center text-blue-gray-500 font-medium mt-4">
             Already have an account?
             <Link to="/auth/login" className="text-gray-900 ml-1">Sign in</Link>
           </Typography>
@@ -80,6 +112,6 @@ return(
 
       </div>
     </section>
-    );
+  );
 }
 export default RegisterPage;

@@ -1,23 +1,20 @@
 import { API_ENDPOINT } from './config';
 import axiosInstance from './AxioService';
 
-interface LoginForm {
+interface Form {
     email: string;
     password: string;
 }
 
 class AuthService {
-    login(loginForm: LoginForm) {
+    login(loginForm: Form) {
         return axiosInstance
             .post(API_ENDPOINT.LOGIN, loginForm);
     };
-    register(email: string, password: string) {
+    register(registerForm: Form) {
         console.log(axiosInstance.post)
         return axiosInstance
-            .post(API_ENDPOINT.REGISTER, {
-                email,
-                password
-            });
+            .post(API_ENDPOINT.REGISTER, registerForm);
     };
 
     logout() {
