@@ -91,7 +91,7 @@ docker-compose up
 5. Run the following command to run the migration script:
 
 ```shell
-npm run migration:run
+npm run schema:sync
 ```
 
 This will start the backend application on port 3000;
