@@ -50,11 +50,10 @@ describe('TaskService', () => {
     it('should return a list of task items with pagination', async () => {
       const mockUserId = 1;
       const mockPage = 1;
-      const mockSortByCreated = 'ASC';
       const mockSortByDue = 'DESC';
       const mockSearch = 'test';
 
-      const mockSelectQuery = `SELECT task_id, task_name, task_description, task_status, task_due_date, task_created FROM task WHERE user_id = ${mockUserId} AND task_name ILIKE '%${mockSearch}%' ORDER BY  task_created ${mockSortByCreated}, task_due_date ${mockSortByDue} LIMIT 100 OFFSET 0`;
+      const mockSelectQuery = `SELECT task_id, task_name, task_description, task_status, task_due_date, task_created FROM task WHERE user_id = ${mockUserId} AND task_name ILIKE '%${mockSearch}%' ORDER BY  task_due_date ${mockSortByDue} LIMIT 100 OFFSET 0`;
       const mockTotalCountQuery = `SELECT COUNT(*) as total FROM task WHERE user_id = ${mockUserId} AND task_name ILIKE '%${mockSearch}%'`;
       const mockTotalRecord = 10;
       const mockTotalPage = 1;
@@ -90,7 +89,7 @@ describe('TaskService', () => {
       const [totalRecord, totalPage, taskResponse] = await taskService.getItems(
         mockUserId,
         mockPage,
-        mockSortByCreated,
+        undefined,
         mockSortByDue,
         mockSearch
       );

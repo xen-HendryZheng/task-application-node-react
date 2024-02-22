@@ -23,7 +23,7 @@ export class TaskService {
     return this.taskRepository.save(newItem);
   }
 
-  async getItems(userId: number, page?: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<[Number, Number, ITaskResponse[]]> {
+  async getItems(userId: number, page?: number, sortByCreated?: "ASC" | "DESC" | undefined, sortByDue?: "ASC" | "DESC" | undefined , search?: string): Promise<[Number, Number, ITaskResponse[]]> {
     let selectQuery = `SELECT task_id, task_name, task_description, task_status, task_due_date, task_created FROM task WHERE user_id = ${userId}`;
     let totalCountQuery = `SELECT COUNT(*) as total FROM task WHERE user_id = ${userId}`;
     let orderBy = '';
@@ -32,13 +32,10 @@ export class TaskService {
       totalCountQuery += ` AND task_name ILIKE '%${search}%'`;
     }
     if (sortByCreated) {
-      orderBy += ` task_created ${sortByCreated}`;
+      orderBy = ` task_created ${sortByCreated}`;
     }
     if (sortByDue) {
-      if (orderBy) {
-        orderBy += ',';
-      }
-      orderBy += ` task_due_date ${sortByDue}`;
+      orderBy = ` task_due_date ${sortByDue}`;
     }
     if (orderBy) {
       selectQuery += ` ORDER BY ${orderBy}`;
@@ -60,7 +57,7 @@ export class TaskService {
     return [totalRecord, totalPage, dataset as ITaskResponse[]];
   }
 
-  async getItemsFromDBWithPagination(userId: number, page?: number, sortByCreated?: "ASC" | "DESC", sortByDue?: "ASC" | "DESC", search?: string): Promise<[Number, Number, ITaskResponse[]]> {
+  async getItemsFromDBWithPagination(userId: number, page?: number, sortByCreated?: "ASC" | "DESC" | undefined, sortByDue?: "ASC" | "DESC" | undefined, search?: string): Promise<[Number, Number, ITaskResponse[]]> {
     const offset = page ? page * LIMIT_PER_PAGE_RECORD : 0;
     const limit = LIMIT_PER_PAGE_RECORD;
     const queryBuilder = this.taskRepository.createQueryBuilder('task');
