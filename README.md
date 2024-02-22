@@ -1,6 +1,6 @@
-## Live System - Backend and Frontend Setup
+## Task Application System - Backend and Frontend Setup
 
-This repository contains the backend and frontend setup for the Auction System.
+This repository contains the backend and frontend setup for the Task Application System.
 
 ## Live Preview
 You can find live preview with the following link:
