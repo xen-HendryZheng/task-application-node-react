@@ -146,7 +146,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        200:
           description: A list of tasks
           content:
             application/json:
@@ -185,12 +185,18 @@ paths:
             schema:
               $ref: '#/components/schemas/TaskPatch'
       responses:
-        '200':
+        200:
           description: The updated task
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        404:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404Response'
   /errors/{error_code}:
     get:
       tags:
@@ -204,7 +210,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: ['200', '400', '403', '422', '500']
+            enum: [200, '400', '403', '422', '500']
       responses:
         200:
           description: default response, instruction to use this endpoint

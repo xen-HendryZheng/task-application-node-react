@@ -68,6 +68,11 @@ The backend is composed of two services: `postgres` and `web`.
   - PGHOST_MIGRATION: postgres
 - Volumes:
   - ./:/app
+
+
+### Clickhouse
+- Run `clickhouse-agent`
+- Run all commands under file called clickhouse.command
   
 
 ### Environment Variables
@@ -103,6 +108,7 @@ This will start the backend application on port 3000;
 - (TypeScript)[https://www.typescriptlang.org/]
 - (TypeORM)[https://typeorm.io/]
 - (PostgreSQL)[https://www.postgresql.org/]
+- (Clickhouse - Materialized Postgresql) [https://clickhouse.com/docs/engines/database-engines/materialized-postgresql]
 ## Authors
 
 - [HendryZheng](https://github.com/xen-HendryZheng)

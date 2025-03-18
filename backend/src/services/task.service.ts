@@ -91,7 +91,7 @@ export class TaskService {
   async getItem(taskId: number, userId: number): Promise<Task> {
     const task = await this.taskRepository.findOne({ where: { taskId, userId } });
     if (!task) {
-      throw new StandardError('Task not found', ErrorCodes.TASK_NOT_FOUND);
+      throw new StandardError(ErrorCodes.TASK_NOT_FOUND, 'Task not found');
     }
     return task;
   }
